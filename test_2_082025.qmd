@@ -1,0 +1,997 @@
+---
+title: "Comparative Visualization for Categorical Data"
+author: "<br><br><span style='font-size:25px;'><strong>Lesley Chapman Hannah, Ph.D., M.S.</strong></span><br>College of Graduate Studies<br>Northeast Ohio Medical University"
+
+format: 
+  revealjs:
+    #theme: solarized
+    css: style.css
+    slide-number: true
+    chalkboard: 
+      buttons: false
+    preview-links: auto
+    logo: images/Flame.jpg
+    #css: styles.css
+    
+---
+
+
+## <span style="font-size:50%">Answering Biomedical Research Questions using Categorical Data Visualization</span> {.smaller}
+
+
+::: columns
+
+::: {.column width="100%"}
+**Review: Descriptive & Structural Questions**
+
+::: incremental
+- Who/What  is in the data?
+  
+    - What categories exist?
+  
+    - How large are they?
+  
+    - How do groups overlap?
+
+:::
+:::
+
+::: {.column width="0%"}
+
+
+::: incremental
+
+
+:::
+
+:::
+
+:::
+::: footer
+:::
+
+## <span style="font-size:50%">Answering Biomedical Research Questions using Categorical Data Visualization</span> {.smaller}
+
+
+::: columns
+
+::: {.column width="100%"}
+**Comparative & Decision Questions**
+
+::: incremental
+- Are categories different, and what should we do?
+
+  - Are there meaningful differences across  units or subgroups?
+
+- Which categories or combinations of categories are the most relevant?
+
+- Where should interventions target?
+
+
+:::
+:::
+
+::: {.column width="0%"}
+
+
+::: incremental
+
+
+:::
+
+:::
+
+:::
+::: footer
+:::
+
+## <span style="font-size:50%">Categorical Data Visualization for Comparative Questions</span> {.smaller}
+
+
+::: columns
+
+::: {.column width="100%"}
+**Determining composition across groups — Common Terminology Criteria for Adverse Events (CTCAE) severity by treatment regimen**
+
+
+::: incremental
+
+
+- CTCAE : standardized clinical grading system developed by the NIH National Cancer Institute (NCI) to score severity of a side effect
+- System to define and grade the severity of side effects experienced by patients undergoing cancer treatment
+
+
+- Severity of adverse events (scoring):
+  
+  - a standardized system developed by the U.S. National Cancer Institute (NCI) to define and grade the severity of side effects experienced by patients undergoing cancer treatment
+
+
+:::
+:::
+
+::: {.column width="0%"}
+
+
+::: incremental
+
+
+:::
+
+:::
+
+:::
+::: footer
+:::
+
+
+## <span style="font-size:50%">Categorical Data Visualization for Comparative Questions</span> {.smaller}
+
+
+::: columns
+
+::: {.column width="100%"}
+**Determining composition across groups — Common Terminology Criteria for Adverse Events (CTCAE) severity by treatment regimen**
+
+
+Severity of adverse events (scoring):
+
+**Grade 1**: Mild symptoms
+**Grade 2**: Moderate symptoms requiring intervention
+**Grade 3**: Severe or medically significant symptoms
+**Grade 4**: Life-threatening consequences requiring urgent intervention
+**Grade 5**: Death related to the adverse event
+
+:::
+
+::: {.column width="0%"}
+
+
+::: incremental
+
+
+:::
+
+:::
+
+:::
+::: footer
+:::
+
+
+
+
+## <span style="font-size:50%">Categorical Data Visualization for Comparative Questions</span> {.smaller}
+
+::: columns
+::: {.column .small}
+
+**Determining composition across groups — Common Terminology Criteria for Adverse Events (CTCAE) severity by treatment regimen**
+
+
+*Question*: Within each treatment regimen (A, B), what share of patients falls into each CTCAE grade (0–4)?
+
+*Plot type*: 100% stacked bar chart 
+
+Rationale: 
+  - Shows within-regimen composition (each bar = 100%)
+
+
+:::
+::: column
+
+```{r}
+#| fig-width: 8
+#| fig-height: 9
+#| 
+# Install/Load libraries
+suppressPackageStartupMessages({
+  library(dplyr); library(ggplot2); library(scales)
+})
+
+# Simulate Data:
+# CTCAE grades by treatement regmine
+# Common Terminology Criteria for Adverse Events (CTCAE):
+# Clinical grading system used in trials to score severity of a side effect
+tox <- tibble::tribble(
+  ~regimen, ~grade, ~n,
+  "A", 1, 120,  "A", 2, 60,  "A", 3, 30,  "A", 4, 10, "A", 5, 4,
+  "B", 1,  95,  "B", 2, 50,  "B", 3, 40,  "B", 4, 20, "B", 5, 8
+) %>%
+  mutate(grade = factor(grade, levels = 1:5, ordered = TRUE)) %>%
+  group_by(regimen) %>%
+  mutate(prop = n / sum(n)) %>%
+  ungroup()
+
+# Generate Plot: Stacked Bar Plot
+ggplot(tox, aes(x = regimen, y = prop, fill = grade)) +
+  geom_col(position = "fill", width = 0.75) +
+  scale_y_continuous(labels = percent) +
+  scale_fill_grey(start = 0.85, end = 0.2, name = "CTCAE Grade") +
+  labs(
+    title = "CTCAE Grade Distribution \n at Cycle 2 by Regimen",
+    x = NULL, y = "Share within regimen"
+  ) +
+  theme_minimal(base_size = 18) +  # ↑ increase base font
+  theme(
+    panel.grid = element_blank(),
+    axis.text.x  = element_text(face = "bold", size = 16),
+    axis.text.y  = element_text(face = "bold", size = 16),
+    axis.title.y = element_text(face = "bold", size = 16, margin = margin(r = 12)),
+    plot.title   = element_text(face = "bold", size = 22, margin = margin(b = 8)),
+    legend.position = "bottom",
+    legend.title = element_text(size = 16, face = "bold"),
+    legend.text  = element_text(size = 15)
+  )
+
+```
+:::
+:::
+
+
+<style>
+.tiny-table table { font-size: 0.8em; }        /* adjust as needed (0.8–0.9em) */
+.tiny-table figcaption, .tiny-table .table-caption { font-size: 0.75em; }
+</style>
+
+
+
+## <span style="font-size:50%">Categorical Data Visualization for Comparative Questions</span> {.smaller}
+
+::: columns
+::: {.column .small}
+
+**Determining composition across groups — Common Terminology Criteria for Adverse Events (CTCAE) severity by treatment regimen**
+
+*How to interpret plot*:
+
+**Bars**: treatment regimen (A, B)
+**Stack**s: CTCAE grades 1-5
+**Y-axis**:
+    
+  - Distribution of side effect severity within each treatment regimen (percentage)
+  - Each bar sums to 100%
+
+
+**Color/shade**:
+
+  - Encodes Side effect severity
+  - Darker: higher grade severity
+
+
+
+:::
+::: column
+
+```{r}
+#| fig-width: 8
+#| fig-height: 9
+#| 
+# Install/Load libraries
+suppressPackageStartupMessages({
+  library(dplyr); library(ggplot2); library(scales)
+})
+
+# Simulate Data:
+# CTCAE grades by treatement regmine
+# Common Terminology Criteria for Adverse Events (CTCAE):
+# Clinical grading system used in trials to score severity of a side effect
+tox <- tibble::tribble(
+  ~regimen, ~grade, ~n,
+  "A", 1, 120,  "A", 2, 60,  "A", 3, 30,  "A", 4, 10, "A", 5, 4,
+  "B", 1,  95,  "B", 2, 50,  "B", 3, 40,  "B", 4, 20, "B", 5, 8
+) %>%
+  mutate(grade = factor(grade, levels = 1:5, ordered = TRUE)) %>%
+  group_by(regimen) %>%
+  mutate(prop = n / sum(n)) %>%
+  ungroup()
+
+# Generate Plot: Stacked Bar Plot
+ggplot(tox, aes(x = regimen, y = prop, fill = grade)) +
+  geom_col(position = "fill", width = 0.75) +
+  scale_y_continuous(labels = percent) +
+  scale_fill_grey(start = 0.85, end = 0.2, name = "CTCAE Grade") +
+  labs(
+    title = "CTCAE Grade Distribution \n at Cycle 2 by Regimen",
+    x = NULL, y = "Share within regimen"
+  ) +
+  theme_minimal(base_size = 18) +  # ↑ increase base font
+  theme(
+    panel.grid = element_blank(),
+    axis.text.x  = element_text(face = "bold", size = 16),
+    axis.text.y  = element_text(face = "bold", size = 16),
+    axis.title.y = element_text(face = "bold", size = 16, margin = margin(r = 12)),
+    plot.title   = element_text(face = "bold", size = 22, margin = margin(b = 8)),
+    legend.position = "bottom",
+    legend.title = element_text(size = 16, face = "bold"),
+    legend.text  = element_text(size = 15)
+  )
+
+```
+:::
+:::
+
+
+<style>
+.tiny-table table { font-size: 0.8em; }        /* adjust as needed (0.8–0.9em) */
+.tiny-table figcaption, .tiny-table .table-caption { font-size: 0.75em; }
+</style>
+
+
+<style>
+.tiny-table table { font-size: 0.8em; }        /* adjust as needed (0.8–0.9em) */
+.tiny-table figcaption, .tiny-table .table-caption { font-size: 0.75em; }
+</style>
+
+
+
+## <span style="font-size:50%">Categorical Data Visualization for Comparative Questions</span> {.smaller}
+
+::: columns
+::: {.column .small}
+
+**Are categories different, and what should we do?**
+
+*How to interpret plot*:
+
+**Interpretation (select):**:
+    
+  - Share of severe toxicity (e.g., grade ≥3) differs between Regimen A vs B
+
+
+**Action (select)**:
+
+  - If one regimen shows a higher severe side effects consider dose modifications, alternative treatment regime, or supportive care protocols 
+  - Consider flagging this difference in safety monitoring plans
+
+:::
+::: column
+
+```{r}
+#| fig-width: 8
+#| fig-height: 9
+#| 
+# Install/Load libraries
+suppressPackageStartupMessages({
+  library(dplyr); library(ggplot2); library(scales)
+})
+
+# Simulate Data:
+# CTCAE grades by treatement regmine
+# Common Terminology Criteria for Adverse Events (CTCAE):
+# Clinical grading system used in trials to score severity of a side effect
+tox <- tibble::tribble(
+  ~regimen, ~grade, ~n,
+  "A", 1, 120,  "A", 2, 60,  "A", 3, 30,  "A", 4, 10, "A", 5, 4,
+  "B", 1,  95,  "B", 2, 50,  "B", 3, 40,  "B", 4, 20, "B", 5, 8
+) %>%
+  mutate(grade = factor(grade, levels = 1:5, ordered = TRUE)) %>%
+  group_by(regimen) %>%
+  mutate(prop = n / sum(n)) %>%
+  ungroup()
+
+# Generate Plot: Stacked Bar Plot
+ggplot(tox, aes(x = regimen, y = prop, fill = grade)) +
+  geom_col(position = "fill", width = 0.75) +
+  scale_y_continuous(labels = percent) +
+  scale_fill_grey(start = 0.85, end = 0.2, name = "CTCAE Grade") +
+  labs(
+    title = "CTCAE Grade Distribution \n at Cycle 2 by Regimen",
+    x = NULL, y = "Share within regimen"
+  ) +
+  theme_minimal(base_size = 18) +  # ↑ increase base font
+  theme(
+    panel.grid = element_blank(),
+    axis.text.x  = element_text(face = "bold", size = 16),
+    axis.text.y  = element_text(face = "bold", size = 16),
+    axis.title.y = element_text(face = "bold", size = 16, margin = margin(r = 12)),
+    plot.title   = element_text(face = "bold", size = 22, margin = margin(b = 8)),
+    legend.position = "bottom",
+    legend.title = element_text(size = 16, face = "bold"),
+    legend.text  = element_text(size = 15)
+  )
+
+```
+:::
+:::
+
+
+<style>
+.tiny-table table { font-size: 0.8em; }        /* adjust as needed (0.8–0.9em) */
+.tiny-table figcaption, .tiny-table .table-caption { font-size: 0.75em; }
+</style>
+
+
+
+## <span style="font-size:50%">Categorical Data Visualization for Comparative Questions</span> {.smaller}
+
+::: columns
+::: {.column .small}
+
+**Evaluating Readmissions by ZIP Code**
+
+*Question*: Across New York select ZIP codes, how do 30-day readmission rates compare by hospital?
+
+*Plot type*: dot (bubble) plot
+
+*Data*: 
+  
+  - Readmission (Y/N) - binary
+  - Count number of readmissions per hospital
+  
+*Rationale*: 
+
+  - **Y-axis**: encodes rate
+  - **X-axis**: ZIP code 
+  - **Color**: hospital by color
+  - **Point size**: discharges (count)
+
+
+:::
+::: column
+
+```{r}
+#| fig-width: 8
+#| fig-height: 9
+#| 
+
+#Install/Load Libraries
+library(ggplot2)
+
+# Simulate Data: Hopsital readmission rates in different regions within New York (Zip Codes)
+hospitals <- c("A", "B", "C", "D")
+rates <- c(0.12, 0.18, 0.09, 0.15)
+zipcodes <- c("12203", "14623", "13210", "14150")
+discharges <- c(100, 50, 200, 75)
+
+df <- data.frame(hospitals, rates, zipcodes, discharges)
+
+# Generate Plot: Dot Plot
+ggplot(df, aes(x = zipcodes, y = rates, color = hospitals, size = discharges)) +
+  geom_point(alpha = 0.7) +
+  geom_text(
+    aes(label = hospitals),
+    nudge_y = 0.012,          # ↑ more separation from the dot
+    size    = 4.2,            # ↑ a bit larger text
+    show.legend = FALSE
+  ) +
+  scale_size_continuous(range = c(5, 12)) +
+  # If you prefer % on the y-axis, uncomment:
+  # scale_y_continuous(labels = scales::percent_format(accuracy = 1),
+  #                    expand = expansion(mult = c(0.02, 0.15))) +
+  scale_y_continuous(expand = expansion(mult = c(0.02, 0.15))) +  # ↑ extra headroom for labels
+  labs(
+    x = "Hospital ZIP Code",
+    y = "30-Day Readmission Rate",
+    title = "Hospital Readmission Rates by ZIP Code (Point Size = Discharges)",
+    color = "Hospital",
+    size  = "Discharges"
+  ) +
+  theme_minimal(base_size = 18) +
+  theme(
+    panel.grid = element_blank(),
+    axis.text.x  = element_text(face = "bold", size = 16),
+    axis.text.y  = element_text(face = "bold", size = 16),
+    axis.title.x = element_text(face = "bold", size = 16, margin = margin(t = 10)),
+    axis.title.y = element_text(face = "bold", size = 16, margin = margin(r = 12)),
+    plot.title   = element_text(face = "bold", size = 22, margin = margin(b = 8)),
+    legend.title = element_text(face = "bold", size = 16),
+    legend.text  = element_text(size = 15)
+  ) +
+  coord_cartesian(clip = "off")
+
+
+```
+:::
+:::
+
+
+<style>
+.tiny-table table { font-size: 0.8em; }        /* adjust as needed (0.8–0.9em) */
+.tiny-table figcaption, .tiny-table .table-caption { font-size: 0.75em; }
+</style>
+
+
+
+
+<style>
+.tiny-table table { font-size: 0.8em; }        /* adjust as needed (0.8–0.9em) */
+.tiny-table figcaption, .tiny-table .table-caption { font-size: 0.75em; }
+</style>
+
+
+
+## <span style="font-size:50%">Categorical Data Visualization for Comparative Questions</span> {.smaller}
+
+::: columns
+::: {.column .small}
+
+**Evaluating Readmissions by ZIP Code**
+
+**Consider: Comparative Questions**
+
+**Are categories different and what should we do?**
+
+  Rates differ by ZIP code and hospital
+
+  Study my prioritize hospitals with higher rates (larger bubbles) - could provide more cases for study
+
+**Meaningful differences across units/subgroups? **
+
+  Large differences can be viewed across groups
+
+
+**Where should interventions target?** 
+
+  Consider strategies to lower rates at high volume sites 
+  Ex: Utilize rapid access clinics
+
+
+:::
+::: column
+
+```{r}
+#| fig-width: 8
+#| fig-height: 9
+#| 
+
+#Install/Load Libraries
+library(ggplot2)
+
+# Simulate Data: Hopsital readmission rates in different regions within New York (Zip Codes)
+hospitals <- c("A", "B", "C", "D")
+rates <- c(0.12, 0.18, 0.09, 0.15)
+zipcodes <- c("12203", "14623", "13210", "14150")
+discharges <- c(100, 50, 200, 75)
+
+df <- data.frame(hospitals, rates, zipcodes, discharges)
+
+# Generate Plot: Dot Plot
+ggplot(df, aes(x = zipcodes, y = rates, color = hospitals, size = discharges)) +
+  geom_point(alpha = 0.7) +
+  geom_text(
+    aes(label = hospitals),
+    nudge_y = 0.012,          # ↑ more separation from the dot
+    size    = 4.2,            # ↑ a bit larger text
+    show.legend = FALSE
+  ) +
+  scale_size_continuous(range = c(5, 12)) +
+  # If you prefer % on the y-axis, uncomment:
+  # scale_y_continuous(labels = scales::percent_format(accuracy = 1),
+  #                    expand = expansion(mult = c(0.02, 0.15))) +
+  scale_y_continuous(expand = expansion(mult = c(0.02, 0.15))) +  # ↑ extra headroom for labels
+  labs(
+    x = "Hospital ZIP Code",
+    y = "30-Day Readmission Rate",
+    title = "Hospital Readmission Rates by ZIP Code (Point Size = Discharges)",
+    color = "Hospital",
+    size  = "Discharges"
+  ) +
+  theme_minimal(base_size = 18) +
+  theme(
+    panel.grid = element_blank(),
+    axis.text.x  = element_text(face = "bold", size = 16),
+    axis.text.y  = element_text(face = "bold", size = 16),
+    axis.title.x = element_text(face = "bold", size = 16, margin = margin(t = 10)),
+    axis.title.y = element_text(face = "bold", size = 16, margin = margin(r = 12)),
+    plot.title   = element_text(face = "bold", size = 22, margin = margin(b = 8)),
+    legend.title = element_text(face = "bold", size = 16),
+    legend.text  = element_text(size = 15)
+  ) +
+  coord_cartesian(clip = "off")
+
+
+```
+:::
+:::
+
+
+<style>
+.tiny-table table { font-size: 0.8em; }        /* adjust as needed (0.8–0.9em) */
+.tiny-table figcaption, .tiny-table .table-caption { font-size: 0.75em; }
+</style>
+
+
+## <span style="font-size:50%">Categorical Data Visualization for Comparative Questions</span> {.smaller}
+
+
+::: columns
+
+::: {.column width="100%"}
+**Patterns of co-morbidity within 30-day readmissions**
+
+Note the following encodings:
+
+- DM — Diabetes Mellitus
+- CKD — Chronic Kidney Disease
+- CAD — Coronary Artery Disease
+- COPD — Chronic Obstructive Pulmonary Disease
+
+
+:::
+
+::: {.column width="0%"}
+
+
+::: incremental
+
+
+:::
+
+:::
+
+:::
+::: footer
+:::
+
+
+
+
+## <span style="font-size:50%">Categorical Data Visualization for Comparative Questions</span> {.smaller}
+
+::: columns
+::: {.column .small}
+
+**Patterns of co-morbidity within 30-day readmissions**
+
+
+*Question*: Among patients readmitted within 30 days, which comorbidity combinations (DM, CKD, CAD, COPD) are most common?
+
+*Plot*: UpSet plot 
+
+*Rationale*: 
+
+  Shows overlaps among multiple binary features 
+
+  Answers “which combinations dominate?” showing explicit counts
+
+
+:::
+::: column
+
+```{r}
+#| fig-width: 8
+#| fig-height: 9
+#| 
+
+#Install /Load libraries
+suppressPackageStartupMessages({
+  library(ComplexUpset)
+  library(dplyr)
+  library(ggplot2)
+})
+
+set.seed(1)
+
+# Simulate cohort
+n <- 800
+cohort <- tibble::tibble(
+  DM        = rbinom(n,1,.40),
+  CKD       = rbinom(n,1,.28),
+  CAD       = rbinom(n,1,.25),
+  COPD      = rbinom(n,1,.18),
+  readmit30 = rbinom(n,1,.30)
+)
+
+sets <- c("DM","CKD","CAD","COPD")
+
+# Make global text bigger for all subplots
+theme_set(theme_minimal(base_size = 18))
+
+cohort %>%
+  filter(readmit30 == 1) %>%
+  # drop 'no-set' rows so every intersection has at least one black dot
+  filter(rowSums(across(all_of(sets))) > 0) %>%
+  # cast to logical flags expected by ComplexUpset
+  mutate(across(all_of(sets), ~ . == 1)) %>%
+  upset(
+    intersect = sets,
+    name = "Patients",
+    min_size = 3,
+    sort_intersections_by = "cardinality",
+
+    # TOP bars: make intersection-size labels larger
+    base_annotations = list(
+      "Intersection size" = intersection_size(text = list(size = 5))
+    ),
+
+    # LEFT bars (set sizes): add count labels & larger axis text
+    set_sizes =
+      upset_set_size() +
+      geom_text(
+        aes(label = after_stat(count)),
+        stat = "count",
+        vjust = -0.25,
+        size = 5
+      ) +
+      theme(
+        axis.title.y = element_text(size = 16, face = "bold"),
+        axis.text.y  = element_text(size = 15)
+      )
+  ) +
+  ggtitle("Multimorbidity combinations among 30-day readmissions") +
+  theme(
+    plot.title = element_text(size = 22, face = "bold", margin = margin(b = 6))
+  )
+
+
+
+```
+:::
+:::
+
+
+<style>
+.tiny-table table { font-size: 0.8em; }        /* adjust as needed (0.8–0.9em) */
+.tiny-table figcaption, .tiny-table .table-caption { font-size: 0.75em; }
+</style>
+
+
+
+
+## <span style="font-size:50%">Categorical Data Visualization for Comparative Questions</span> {.smaller}
+
+::: columns
+::: {.column .small}
+
+**Patterns of co-morbidity within 30-day readmissions**
+
+
+*Question*: Among patients readmitted within 30 days, which comorbidity combinations (DM, CKD, CAD, COPD) are most common?
+
+*Plot Interpretation*:
+
+Set Sizes (left section)
+  - Bar height : patients per condition
+
+Disease count intersection size (top section)
+  - Combination of conditions
+  - Number of patients that fall within a disease combination [bar height]
+  - Tallest Bar: 31 patients had diabetes alone - no CKD, CAD, or COPD
+
+Dot Matrix
+  - Highlights the conditions that define each top bar
+  - Black dots: conditions that are present
+  - Grey dots: condition not represented in top bar
+
+:::
+::: column
+
+```{r}
+#| fig-width: 8
+#| fig-height: 9
+#| 
+
+suppressPackageStartupMessages({
+  library(ComplexUpset)
+  library(dplyr)
+  library(ggplot2)
+  library(tibble)
+})
+
+set.seed(1)
+
+# Simulate cohort
+n <- 800
+cohort <- tibble(
+  DM        = rbinom(n,1,.40),
+  CKD       = rbinom(n,1,.28),
+  CAD       = rbinom(n,1,.25),
+  COPD      = rbinom(n,1,.18),
+  readmit30 = rbinom(n,1,.30)
+)
+sets <- c("DM","CKD","CAD","COPD")
+
+# Focus on 30-day readmissions and keep rows with at least one condition present
+readmit <- cohort %>%
+  filter(readmit30 == 1) %>%
+  filter(rowSums(across(all_of(sets))) > 0)
+
+# ---- Console summary for the interpretation text (dynamic, matches plot) ----
+combo_counts <- readmit %>%
+  mutate(combo = apply(select(., all_of(sets)), 1,
+                       function(row) paste(names(row)[as.logical(row)], collapse = " + "))) %>%
+  count(combo, name = "patients") %>%
+  arrange(desc(patients))
+
+# Print the "tallest bar" message (adjusts to your simulated data)
+if (nrow(combo_counts) > 0) {
+  cat(sprintf("",
+              combo_counts$patients[1], combo_counts$combo[1]))
+}
+
+# ---- UpSet plot ----
+# Notes for interpretation:
+# - LEFT bars (set sizes): bar height = patients per condition (among readmitted)
+# - TOP bars (intersection size): bar height = patients in each combination
+# - Dot matrix: black = condition present; grey = condition absent
+# No global theming to avoid ggplot2/ComplexUpset theme merges.
+
+# UpSet plot without any text labels on bars
+readmit %>%
+  mutate(across(all_of(sets), ~ . == 1)) %>%
+  upset(
+    intersect = sets,
+    name = "Patients",
+    min_size = 1,
+    sort_intersections_by = "cardinality",
+    base_annotations = list(
+      "Intersection size" = intersection_size(text = list(size = 0)) # suppress intersection labels
+    ),
+    set_sizes = upset_set_size()  # no geom_text layer at all
+  ) +
+  labs(
+    title = "Among 30-day readmissions: which comorbidity combinations are most common?",
+    subtitle = "Left: patients per condition (set size). Top: patients per combination (intersection size)."
+  )
+
+```
+:::
+:::
+
+
+<style>
+.tiny-table table { font-size: 0.8em; }        /* adjust as needed (0.8–0.9em) */
+.tiny-table figcaption, .tiny-table .table-caption { font-size: 0.75em; }
+</style>
+
+
+## <span style="font-size:50%">Categorical Data Visualization for Comparative Questions</span> {.smaller}
+
+::: columns
+::: {.column .small}
+
+**Patterns of co-morbidity within 30-day readmissions**
+
+
+*Research questions to consider*
+
+*Are categories different and what should we do?* 
+
+*Meaningful differences across units/subgroups? *
+  
+  Large differences can be viewed across groups
+
+
+*Where should interventions target? *
+  
+  Consider strategies to lower rates at high volume sites 
+  Ex: Utilize rapid access clinics
+
+
+:::
+::: column
+
+```{r}
+#| fig-width: 8
+#| fig-height: 9
+#| 
+
+suppressPackageStartupMessages({
+  library(ComplexUpset)
+  library(dplyr)
+  library(ggplot2)
+  library(tibble)
+})
+
+set.seed(1)
+
+# Simulate cohort
+n <- 800
+cohort <- tibble(
+  DM        = rbinom(n,1,.40),
+  CKD       = rbinom(n,1,.28),
+  CAD       = rbinom(n,1,.25),
+  COPD      = rbinom(n,1,.18),
+  readmit30 = rbinom(n,1,.30)
+)
+sets <- c("DM","CKD","CAD","COPD")
+
+# Focus on 30-day readmissions and keep rows with at least one condition present
+readmit <- cohort %>%
+  filter(readmit30 == 1) %>%
+  filter(rowSums(across(all_of(sets))) > 0)
+
+# ---- Console summary for the interpretation text (dynamic, matches plot) ----
+combo_counts <- readmit %>%
+  mutate(combo = apply(select(., all_of(sets)), 1,
+                       function(row) paste(names(row)[as.logical(row)], collapse = " + "))) %>%
+  count(combo, name = "patients") %>%
+  arrange(desc(patients))
+
+# Print the "tallest bar" message (adjusts to your simulated data)
+if (nrow(combo_counts) > 0) {
+  cat(sprintf("",
+              combo_counts$patients[1], combo_counts$combo[1]))
+}
+
+# ---- UpSet plot ----
+# Notes for interpretation:
+# - LEFT bars (set sizes): bar height = patients per condition (among readmitted)
+# - TOP bars (intersection size): bar height = patients in each combination
+# - Dot matrix: black = condition present; grey = condition absent
+# No global theming to avoid ggplot2/ComplexUpset theme merges.
+
+# UpSet plot without any text labels on bars
+readmit %>%
+  mutate(across(all_of(sets), ~ . == 1)) %>%
+  upset(
+    intersect = sets,
+    name = "Patients",
+    min_size = 1,
+    sort_intersections_by = "cardinality",
+    base_annotations = list(
+      "Intersection size" = intersection_size(text = list(size = 0)) # suppress intersection labels
+    ),
+    set_sizes = upset_set_size()  # no geom_text layer at all
+  ) +
+  labs(
+    title = "Among 30-day readmissions: which comorbidity combinations are most common?",
+    subtitle = "Left: patients per condition (set size). Top: patients per combination (intersection size)."
+  )
+
+```
+:::
+:::
+
+
+<style>
+.tiny-table table { font-size: 0.8em; }        /* adjust as needed (0.8–0.9em) */
+.tiny-table figcaption, .tiny-table .table-caption { font-size: 0.75em; }
+</style>
+
+
+
+
+
+
+## <span style="font-size:50%">Summary</span> {.smaller}
+
+
+::: columns
+
+::: {.column width="100%"}
+**Categorical data visualization allows one to answer fundamental comparison questions about data:**
+
+::: incremental
+
+**Are groups different?**
+
+  - Compare severity distributions across treatment regimens
+  - Readmission rates across hospitals
+  
+**Which categories dominate?**
+
+  - Identify side effect grades, outcomes, or comorbidities that account for the largest share within a group
+
+**Where are the greatest overlaps observed?**
+
+  - Detect co-morbidity combinations that drive risk in readmitted patients
+
+
+
+:::
+:::
+
+::: {.column width="0%"}
+
+
+::: incremental
+
+
+:::
+
+:::
+
+:::
+::: footer
+:::
+
+
+
+
+
+
+
+
+
+
